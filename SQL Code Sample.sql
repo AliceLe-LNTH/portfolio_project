@@ -1,16 +1,22 @@
--- Show top 10 data in customers table
+-- Show Revenue of each product type
 
-select top 10 * from customers;
+SELECT product_name, product_type, size, colour, total_price as Revenue
+FROM
+ (select product_id, product_name,product_type, size, colour from products) a 
+left join 
+  (select product_id, total_price from sales )b 
+on a.product_id = b.product_id;
 
- ---- Show Customers's Order details in Victoria  
+---- Show top 5 products with the highest orders
 
- select order_id, payment, order_date
-from 
- (select order_id, customer_id, payment, order_date from orders) a
-left JOIN
- (select customer_id, state from customers) b
-on a.customer_id = b.customer_id
-where state = 'Victoria' ;
+SELECT top 5 b.product_name, count (distinct order_id) as total_order
+FROM
+(select order_id, product_id from sales) a 
+inner join 
+ ( select product_id, product_name from products) b  
+on a.product_id = b.product_id
+group by product_name
+order by total_order desc;
 
  ---- Count the number of customers group by age group
 
